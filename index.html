@@ -299,7 +299,7 @@ body{
 .letter-content{font-size:15px;line-height:2;color:#e6e6ee;}
 .baseball-egg{text-align:center;margin-top:24px;color:var(--neon-yellow);font-size:13px;border-top:1px dashed var(--neon-pink);padding-top:16px;}
 
-/* ============ 你手繪的 EMU3000 展示位 ============ */
+/* ============ 你手繪的 EMU800 展示位 ============ */
 .emu-section{text-align:center;}
 .emu-label{color:var(--neon-cyan);font-size:14px;margin-bottom:12px;}
 .emu-frame{display:inline-block;border:3px solid var(--rave-bronze);background:#0c1020;padding:8px;box-shadow:4px 4px 0 #000,inset 0 0 16px rgba(205,155,74,.22);max-width:92vw;}
@@ -463,14 +463,14 @@ body{
 
     </div>
 
-    <!-- 你手繪的 EMU3000 -->
+    <!-- 你手繪的 EMU800 -->
     <div class="emu-section section-gap">
-      <p class="emu-label">🚆 月台特別展示 ── ED81g 親點：EMU3000</p>
+      <p class="emu-label">🚆 月台特別展示 ── ED81g 親點：EMU800</p>
       <div class="emu-frame">
-        <img id="emu-img" src="emu3000.png" alt="EMU3000"
+        <img id="emu-img" src="emu800.png" alt="EMU800"
              onerror="this.style.display='none';document.getElementById('emu-ph').style.display='flex';">
         <div id="emu-ph" class="emu-ph" style="display:none;">
-          <span>[ 你親手畫的 EMU3000，即將進站… ]<br><small>把畫好的圖存成 emu3000.png 放在同一個資料夾就會自動顯示</small></span>
+          <span>[ 你親手畫的 EMU800，即將進站… ]<br><small>把畫好的圖存成 emu800.png 放在同一個資料夾就會自動顯示</small></span>
         </div>
       </div>
     </div>
@@ -482,9 +482,9 @@ body{
       <p class="letter-content">
         辛苦了。這一年半，是我忘了停下來看看你的疲憊，忘了給你需要的情緒價值，甚至還對你說了那些賭氣的話，對不起。謝謝你即使在最混亂的時候，依然把最核心的安全感和生活留在我們這裡。<br><br>
         還有……昨天不小心吃了你的雪花牛，真的對不起讓你體驗那麼差，也沒有立即補償你、逗你開心。下禮拜六四點跟著你走，早點用完我們一起去吃加分，你願意給我贖罪的機會嗎？<br><br>
-        今天你從宜蘭回來，不管你釐清的結果如何，我都想讓你看見我的決心。我正在努力修正我的 Bug，學著好好關心你、注意你的情緒與需求。九月的大阪、你最想朝聖的京都鐵道博物館、還有未來的歐洲和花東，車票我都已經在 Code 裡幫你預留好位置了。<br><br>
+        今天你從宜蘭回來，不管你對她的感覺如何，我都想讓你看見我的決心。我正在努力修正我的 Bug，學著好好關心你、注意你的情緒與需求。九月的大阪、你最想朝聖的京都鐵道博物館、還有未來的歐洲和花東，我會一直陪著你。<br><br>
         我還想跟你許一個約定：以後每一年的過年，我們都要一起出國過。把每一個重要的日子，都變成我們一起去看世界的理由。<br><br>
-        這一次，換我當你的副駕駛，陪你開往下一段 7 年。不論外面多複雜，只要你回頭，ED81g 的專屬月台一直都在這裡。
+        請讓我繼續當你的副駕駛，陪你開往下一段 7 年。不論外面多複雜，只要你回頭，ED81g 的專屬月台一直都在這裡。
       </p>
       <div class="baseball-egg">⚾ [ 棒球、電吉他 與雷文克勞的鷹羽已加載，隨時為你應援 ] 🎸</div>
     </div>
@@ -538,6 +538,8 @@ const CONFIG = {
   INTRO_YT_ID:  "L8ySlcz_Ui0",  // ← 進主頁後先「完整播完」的短片，播完才淡入主 BGM
   BGM_YT_ID:    "Xxpit77p8wo",   // ← 主 BGM（短片播完後漸進淡入），空字串 "" 則改用內建合成音樂
   STATION_SFX:  "",              // ← 想用「真的」日本車站配音檔，把檔名填這（例如 "station.mp3" 放同資料夾）；留空則用內建合成音
+  PHOTO_FILE:   "photo.jpg",     // ← 像素合照要用的照片檔名（放同資料夾）；留空 "" 則用程式繪製的像素小人
+  PHOTO_ROTATE: 0,               // ← 照片若是側躺的，可改 90 / 180 / 270 轉正
 };
 
 /* ---------- 飄落星星 ---------- */
@@ -679,30 +681,51 @@ function startLoadingPhoto(){
   const canvas=document.getElementById('pixelCanvas');
   const ctx=canvas.getContext('2d');
   ctx.clearRect(0,0,canvas.width,canvas.height);
-  const GRID=64, SCALE=canvas.width/GRID;
 
-  // 先把整張場景畫到離屏 canvas，再像粒子一樣慢慢「組裝」出來
-  const off=document.createElement('canvas'); off.width=GRID; off.height=GRID;
-  drawScene(off.getContext('2d'),GRID);
-  const data=off.getContext('2d').getImageData(0,0,GRID,GRID).data;
-
-  const order=[];
-  for(let y=0;y<GRID;y++)for(let x=0;x<GRID;x++)order.push([x,y]);
-  for(let i=order.length-1;i>0;i--){const j=(Math.random()*(i+1))|0;[order[i],order[j]]=[order[j],order[i]];}
-
-  let i=0; const batch=22;
-  const timer=setInterval(()=>{
-    for(let n=0;n<batch&&i<order.length;n++,i++){
-      const [x,y]=order[i]; const idx=(y*GRID+x)*4;
-      const a=data[idx+3]/255;
-      ctx.fillStyle=`rgba(${data[idx]},${data[idx+1]},${data[idx+2]},${a})`;
-      ctx.fillRect(x*SCALE,y*SCALE,SCALE+0.5,SCALE+0.5);
+  // 把來源畫到離屏 canvas，再像粒子一樣慢慢「組裝」出來
+  function revealFrom(off,GRID){
+    const SCALE=canvas.width/GRID;
+    let data;
+    try{ data=off.getContext('2d').getImageData(0,0,GRID,GRID).data; }
+    catch(e){ // 本機 file:// 讀取照片像素被瀏覽器擋住 → 改用程式繪製的場景（線上版正常）
+      const o2=document.createElement('canvas'); o2.width=64; o2.height=64;
+      drawScene(o2.getContext('2d'),64); return revealFrom(o2,64);
     }
-    if(i>=order.length){
-      clearInterval(timer);
-      document.getElementById('photo-caption').textContent='[System]: 7 年合照像素重構成功。歡迎回家，ED81g。';
-    }
-  },28);
+    const order=[];
+    for(let y=0;y<GRID;y++)for(let x=0;x<GRID;x++)order.push([x,y]);
+    for(let k=order.length-1;k>0;k--){const j=(Math.random()*(k+1))|0;[order[k],order[j]]=[order[j],order[k]];}
+    let i=0; const batch=Math.max(22,Math.round(order.length/95));
+    const timer=setInterval(()=>{
+      for(let n=0;n<batch&&i<order.length;n++,i++){
+        const [x,y]=order[i]; const idx=(y*GRID+x)*4; const a=data[idx+3]/255;
+        ctx.fillStyle=`rgba(${data[idx]},${data[idx+1]},${data[idx+2]},${a})`;
+        ctx.fillRect(x*SCALE,y*SCALE,SCALE+0.6,SCALE+0.6);
+      }
+      if(i>=order.length){ clearInterval(timer);
+        document.getElementById('photo-caption').textContent='[System]: 7 年合照像素重構成功。歡迎回家，ED81g。';
+      }
+    },24);
+  }
+
+  if(CONFIG.PHOTO_FILE){          // 用真實合照
+    const GRID=88;
+    const off=document.createElement('canvas'); off.width=GRID; off.height=GRID;
+    const img=new Image();
+    img.onload =()=>{ drawCover(off.getContext('2d'),img,GRID,CONFIG.PHOTO_ROTATE||0); revealFrom(off,GRID); };
+    img.onerror=()=>{ const o=document.createElement('canvas'); o.width=64; o.height=64; drawScene(o.getContext('2d'),64); revealFrom(o,64); };
+    img.src=CONFIG.PHOTO_FILE;
+  } else {                        // 沒設定照片 → 程式繪製像素小人
+    const o=document.createElement('canvas'); o.width=64; o.height=64; drawScene(o.getContext('2d'),64); revealFrom(o,64);
+  }
+}
+// 把整張照片完整放進方形（contain，兩個人的臉都看得到，可選旋轉）
+function drawCover(c,img,N,rot){
+  c.save(); c.clearRect(0,0,N,N); c.translate(N/2,N/2);
+  if(rot) c.rotate(rot*Math.PI/180);
+  const scale=Math.min(N/img.width,N/img.height);
+  const w=img.width*scale, h=img.height*scale;
+  c.drawImage(img,-w/2,-h/2,w,h);
+  c.restore();
 }
 
 /* 畫一張 City Pop 深夜、兩個人並肩（一個彈電吉他）的像素場景 */
@@ -968,7 +991,7 @@ function toggleBgm(){
    - 把 startBgm() 裡的內容改成：document.getElementById('song').play();
    （內建的合成低音是為了「不放音檔也有聲音」，你想保留也可以。）
 
-4. 放你手繪的 EMU3000：把畫好的圖存成 emu3000.png，放在跟這個檔案同一個
+4. 放你手繪的 EMU800：把畫好的圖存成 emu800.png，放在跟這個檔案同一個
    資料夾，重新整理網頁就會自動出現在「月台特別展示」那一格。
 
 5. 想換成「真實合照」而不是程式畫的像素人：
