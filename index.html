@@ -327,6 +327,9 @@ body{
   padding:18px;background:#0c1020;
 }
 .drawing-egg p{margin:6px 0;}
+.drawing-frame{display:inline-block;border:3px solid var(--neon-pink);background:#0c1020;padding:8px;margin-top:10px;box-shadow:4px 4px 0 #000,inset 0 0 16px rgba(255,46,136,.18);max-width:92vw;}
+.drawing-frame img{display:block;max-width:380px;width:100%;}
+.drawing-ph{display:flex;align-items:center;justify-content:center;width:380px;max-width:84vw;height:180px;color:#7a7a90;font-size:13px;border:2px dashed #3a3a4a;text-align:center;}
 
 /* ============ BGM 開關 ============ */
 .bgm-toggle{
@@ -500,11 +503,17 @@ body{
 
     <!-- 8 年畫筆彩蛋 -->
     <div class="drawing-egg section-gap">
-      <p style="color:#6fb0ff;font-size:13px;">[System_Notification] 偵測到一項停滯 2920 天（8 年）的背景程序…</p>
-      <p style="color:#fff;font-size:14px;">⚡ <b>Status: <span style="color:var(--neon-yellow);">Painting_Our_Photo.exe（正在初始化中）</span></b> ⚡</p>
-      <p style="color:#888;font-size:12px;line-height:1.7;">
-        「雖然 8 年沒有拿起畫筆了，但這一次，我已經在排程裡寫好了代碼。<br>
-        下一次進站，會補上一張真正親手畫的、專屬於我們的合照。敬請期待。」
+      <p style="color:#6fb0ff;font-size:13px;">[System_Notification] 停滯 2920 天（8 年）的背景程序，已重新啟動 ✓</p>
+      <p style="color:#fff;font-size:14px;">⚡ <b>Status: <span style="color:var(--neon-yellow);">Painting_Our_Photo.exe（已完成．進站）</span></b> ⚡</p>
+      <div class="drawing-frame">
+        <img src="illust.png" alt="我們的合照"
+             onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+        <div class="drawing-ph" style="display:none;"><span>[ 親手畫的合照載入中…<br>把 illust.png 放在同一個資料夾就會顯示 ]</span></div>
+      </div>
+      <p style="color:#bbb;font-size:13px;line-height:2;margin-top:16px;">
+        「8 年沒有拿起畫筆了，這張我畫得有點急，我知道我還不太會畫人……<br>
+        但這是我親手畫的、屬於我們的合照。<br>
+        之後我會慢慢精進畫技，把屬於我們完整的回憶，一張一張、好好地畫下來。」
       </p>
     </div>
 
